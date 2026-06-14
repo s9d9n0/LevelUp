@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 
 from screener.filters import run_scan
 from data.fetcher import fetch_ohlcv
+from indicators.technical import add_indicators
 
 app = FastAPI()
 
@@ -35,21 +36,30 @@ async def scan(
 @app.get("/chart/{ticker}", response_class=HTMLResponse)
 async def chart(request: Request, ticker: str):
     df = await fetch_ohlcv(ticker)
+    df = add_indicators(df)
     df = df.reset_index()
 
-    candles = [
-        {
-            "x": row["Date"].strftime("%Y-%m-%d"),
+    candles = []
+    rsi_data = []
+
+    for _, row in df.iterrows():
+        date = row["Date"].strftime("%Y-%m-%d")
+        candles.append({
+            "x": date,
             "o": round(float(row["Open"]), 2),
             "h": round(float(row["High"]), 2),
             "l": round(float(row["Low"]), 2),
             "c": round(float(row["Close"]), 2),
-        }
-        for _, row in df.iterrows()
-    ]
+        })
+        rsi_val = row.get("RSI_14")
+        rsi_data.append({
+            "x": date,
+            "y": round(float(rsi_val), 2) if rsi_val and not str(rsi_val) == "nan" else None
+        })
 
     return templates.TemplateResponse(request, "chart.html", {
         "ticker": ticker,
         "candles": candles,
+        "rsi_data": rsi_data,
     })
 

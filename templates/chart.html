@@ -7,84 +7,103 @@
 </div>
 
 <div class="chart-wrapper">
-    <canvas id="candleChart"></canvas>
+    <div id="mainChart" style="height: 600px;"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.1.1"></script>
-<script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 
 <script>
 const candles = {{ candles | tojson }};
+const rsiData = {{ rsi_data | tojson }};
 
-const labels = candles.map(c => c.x);
-const closes = candles.map(c => c.c);
-const highs = candles.map(c => c.h);
-const lows = candles.map(c => c.l);
+const dates = candles.map(c => c.x);
+const ohlc  = candles.map(c => [c.o, c.c, c.l, c.h]);
+const rsi   = rsiData.map(r => r.y);
 
-new Chart(document.getElementById("candleChart"), {
-    type: "line",
-    data: {
-        labels: labels,
-        datasets: [
-            {
-                label: "Clôture",
-                data: closes,
-                borderColor: "#58a6ff",
-                borderWidth: 2,
-                pointRadius: 0,
-                tension: 0.1,
-                fill: false,
-            },
-            {
-                label: "Haut",
-                data: highs,
-                borderColor: "#2ea043",
-                borderWidth: 1,
-                pointRadius: 0,
-                tension: 0.1,
-                fill: false,
-            },
-            {
-                label: "Bas",
-                data: lows,
-                borderColor: "#f85149",
-                borderWidth: 1,
-                pointRadius: 0,
-                tension: 0.1,
-                fill: false,
-            }
-        ]
+const chart = echarts.init(document.getElementById("mainChart"), "dark");
+
+chart.setOption({
+    backgroundColor: "#1a1d27",
+    tooltip: {
+        trigger: "axis",
+        axisPointer: { type: "cross" },
     },
-    options: {
-        responsive: true,
-        interaction: {
-            mode: "index",
-            intersect: false,
+    axisPointer: { link: [{ xAxisIndex: "all" }] },
+    dataZoom: [
+        { type: "inside", xAxisIndex: [0, 1], start: 0, end: 100 },
+        {
+            type: "slider", xAxisIndex: [0, 1],
+            bottom: 5, height: 20,
+            borderColor: "#2e3244",
+            fillerColor: "rgba(88, 166, 255, 0.1)",
+            textStyle: { color: "#8b949e" },
+        }
+    ],
+    grid: [
+        { left: "5%", right: "3%", top: "3%", height: "58%" },
+        { left: "5%", right: "3%", top: "68%", height: "18%" },
+    ],
+    xAxis: [
+        {
+            type: "category", data: dates, gridIndex: 0,
+            axisLine: { lineStyle: { color: "#2e3244" } },
+            axisLabel: { show: false },
+            splitLine: { show: false },
         },
-        plugins: {
-            legend: {
-                labels: { color: "#8b949e" }
+        {
+            type: "category", data: dates, gridIndex: 1,
+            axisLine: { lineStyle: { color: "#2e3244" } },
+            axisLabel: { color: "#8b949e", rotate: 30 },
+            splitLine: { show: false },
+        }
+    ],
+    yAxis: [
+        {
+            type: "value", scale: true, gridIndex: 0,
+            axisLine: { lineStyle: { color: "#2e3244" } },
+            axisLabel: { color: "#8b949e" },
+            splitLine: { lineStyle: { color: "#2e3244" } },
+        },
+        {
+            type: "value", min: 0, max: 100, gridIndex: 1,
+            axisLine: { lineStyle: { color: "#2e3244" } },
+            axisLabel: { color: "#8b949e" },
+            splitLine: { lineStyle: { color: "#2e3244" } },
+        }
+    ],
+    series: [
+        {
+            type: "candlestick",
+            xAxisIndex: 0, yAxisIndex: 0,
+            data: ohlc,
+            itemStyle: {
+                color: "#2ea043",
+                color0: "#f85149",
+                borderColor: "#2ea043",
+                borderColor0: "#f85149",
             }
         },
-        scales: {
-            x: {
-                ticks: {
-                    color: "#8b949e",
-                    maxTicksLimit: 10,
-                },
-                grid: { color: "#2e3244" },
-            },
-            y: {
-                ticks: { color: "#8b949e" },
-                grid: { color: "#2e3244" },
+        {
+            name: "RSI",
+            type: "line",
+            xAxisIndex: 1, yAxisIndex: 1,
+            data: rsi,
+            smooth: true,
+            symbol: "none",
+            lineStyle: { color: "#58a6ff", width: 2 },
+            markLine: {
+                silent: true,
+                lineStyle: { color: "#8b949e", type: "dashed" },
+                data: [
+                    { yAxis: 30, label: { formatter: "30", color: "#8b949e" } },
+                    { yAxis: 70, label: { formatter: "70", color: "#8b949e" } },
+                ]
             }
         }
-    }
+    ]
 });
+
+window.addEventListener("resize", () => chart.resize());
 </script>
 
 {% endblock %}
