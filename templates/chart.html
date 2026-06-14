@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="chart-header">
+    <a href="/" class="back-link">← Retour</a>
+    <h2>{{ ticker }}</h2>
+</div>
+
+<div class="chart-wrapper">
+    <canvas id="candleChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.1.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+
+<script>
+const candles = {{ candles | tojson }};
+
+const labels = candles.map(c => c.x);
+const closes = candles.map(c => c.c);
+const highs = candles.map(c => c.h);
+const lows = candles.map(c => c.l);
+
+new Chart(document.getElementById("candleChart"), {
+    type: "line",
+    data: {
+        labels: labels,
+        datasets: [
+            {
+                label: "Clôture",
+                data: closes,
+                borderColor: "#58a6ff",
+                borderWidth: 2,
+                pointRadius: 0,
+                tension: 0.1,
+                fill: false,
+            },
+            {
+                label: "Haut",
+                data: highs,
+                borderColor: "#2ea043",
+                borderWidth: 1,
+                pointRadius: 0,
+                tension: 0.1,
+                fill: false,
+            },
+            {
+                label: "Bas",
+                data: lows,
+                borderColor: "#f85149",
+                borderWidth: 1,
+                pointRadius: 0,
+                tension: 0.1,
+                fill: false,
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        interaction: {
+            mode: "index",
+            intersect: false,
+        },
+        plugins: {
+            legend: {
+                labels: { color: "#8b949e" }
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: "#8b949e",
+                    maxTicksLimit: 10,
+                },
+                grid: { color: "#2e3244" },
+            },
+            y: {
+                ticks: { color: "#8b949e" },
+                grid: { color: "#2e3244" },
+            }
+        }
+    }
+});
+</script>
+
+{% endblock %}

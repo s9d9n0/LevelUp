@@ -1,4 +1,38 @@
 {% extends "base.html" %}
 {% block content %}
 <p>Bienvenue sur le screener !</p>
+
+<h2>Lancer un scan</h2>
+
+<form hx-post="/scan" hx-target="#results" hx-indicator="#spinner">
+
+    <div class="form-group">
+        <label>RSI min</label>
+        <input type="number" name="rsi_min" value="0" min="0" max="100">
+    </div>
+
+
+    <div class="form-group">
+        <label>RSI max</label>
+        <input type="number" name="rsi_max" value="100" min="0" max="100">
+    </div>
+
+    <div class="checkbox-group">
+        <label>
+            <input type="checkbox" name="macd_signal" value="true">
+            MACD haussier
+        </label>
+        <label>
+            <input type="checkbox" name="above_ema" value="true">
+            Prix > EMA 20
+        </label>
+    </div>
+
+    <button type="submit">🔍 Scanner</button>
+    <span id="spinner" class="htmx-indicator">⏳ Scan en cours…</span>
+
+</form>
+
+<div id="results"></div>
+
 {% endblock %}
