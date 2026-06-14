@@ -1,7 +1,7 @@
 [project]
 name = "levelup"
 version = "0.1.0"
-description = "Add your description here"
+description = "projet d'analyse de quelques actions de la bourse"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
