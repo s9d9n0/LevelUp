@@ -5,23 +5,7 @@ from datetime import datetime
 DB_PATH = "screener.duckdb"
 
 
-# def get_connection():
-#     return duckdb.connect(DB_PATH, read_only=False)
-
-
-_con = None
-
-def get_connection():
-    global _con
-    if _con is None:
-        _con = duckdb.connect(DB_PATH)
-    return _con
-
-
-
-
 def init_db():
-    # con = get_connection()
     con = duckdb.connect(DB_PATH)
     con.execute("""
         CREATE TABLE IF NOT EXISTS scans (
@@ -47,7 +31,6 @@ def init_db():
 
 
 def save_scan(rsi_min: int, rsi_max: int, macd_signal: bool, above_ema: bool, results: list[dict]) -> int:
-    # con = get_connection()
     con = duckdb.connect(DB_PATH)
 
     # Récupère le prochain id
@@ -68,7 +51,6 @@ def save_scan(rsi_min: int, rsi_max: int, macd_signal: bool, above_ema: bool, re
 
 
 def get_history() -> list[dict]:
-    # con = get_connection()
     con = duckdb.connect(DB_PATH)
 
     rows = con.execute("""
@@ -95,7 +77,6 @@ def get_history() -> list[dict]:
 
 
 def get_scan_results(scan_id: int) -> list[dict]:
-    # con = get_connection()
     con = duckdb.connect(DB_PATH)
     
     rows = con.execute("""
