@@ -34,4 +34,38 @@
 
 <div id="results"></div>
 
+{% if history %}
+<h3 class="history-title">Historique des scans</h3>
+<div class="results-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>RSI min</th>
+                <th>RSI max</th>
+                <th>MACD</th>
+                <th>EMA 20</th>
+                <th>Résultats</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for h in history %}
+            <tr>
+                <td>{{ h.date }}</td>
+                <td>{{ h.rsi_min }}</td>
+                <td>{{ h.rsi_max }}</td>
+                <td>{{ "✅" if h.macd_signal else "—" }}</td>
+                <td>{{ "✅" if h.above_ema else "—" }}</td>
+                <td>
+                    <a href="#" hx-get="/history/{{ h.id }}" hx-target="#results">
+                        {{ h.nb_resultats }} titre(s)
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
 {% endblock %}

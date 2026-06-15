@@ -238,3 +238,20 @@ tbody td a {
 tbody td a:hover {
     text-decoration: underline;
 }
+
+
+
+
+
+
+
+
+
+/* ── Historique ── */
+.history-title {
+    font-size: 1rem;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin: 2rem 0 0.75rem;
+}

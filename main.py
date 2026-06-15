@@ -3,8 +3,9 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-from screener.filters import run_scan
+from data.db import init_db, save_scan, get_history, get_scan_results
 from data.fetcher import fetch_ohlcv
+from screener.filters import run_scan
 from indicators.technical import add_indicators
 
 app = FastAPI()
@@ -12,9 +13,16 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
+@app.on_event("startup")
+async def startup():
+    init_db()
+
+
 @app.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request):
-    return templates.TemplateResponse(request, "dashboard.html")
+    history = get_history()
+    print("historique:", history)
+    return templates.TemplateResponse(request, "dashboard.html", {"history": history})
 
 @app.post("/scan", response_class=HTMLResponse)
 async def scan(
@@ -30,6 +38,14 @@ async def scan(
         macd_signal=macd_signal,
         above_ema=above_ema,
     )
+    scan_id = save_scan(rsi_min, rsi_max, macd_signal, above_ema, results)
+    print("scan sauvegardé, id:", scan_id, "nb résultats:", len(results))
+    return templates.TemplateResponse(request, "partials/results_table.html", {"results": results})
+
+
+@app.get("/history/{scan_id}", response_class=HTMLResponse)
+async def history_detail(request: Request, scan_id: int):
+    results = get_scan_results(scan_id)
     return templates.TemplateResponse(request, "partials/results_table.html", {"results": results})
 
 
