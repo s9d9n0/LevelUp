@@ -35,10 +35,23 @@ async def scan_ticker(
             if ema is None or close is None or close <= ema:
                 return None
 
+        close = round(float(last["Close"]), 2)
+        # Variation 1 jour
+        prev_1d = df.iloc[-2]
+        variation_1d = round((close - float(prev_1d["Close"])) / float(prev_1d["Close"]) * 100, 2)
+
+        # Variation 1 semaine (5 séances de bourse)
+        prev_1w = df.iloc[-6] if len(df) >= 6 else df.iloc[0]
+        variation_1w = round((close - float(prev_1w["Close"])) / float(prev_1w["Close"]) * 100, 2)
+
+
         return {
             "ticker": ticker,
+            "name": TICKERS.get(ticker, ticker),
             "rsi": round(float(rsi), 2),
             "close": round(float(last["Close"]), 2),
+            "variation_1d": variation_1d,
+            "variation_1w": variation_1w,
             "macd": round(float(last.get("MACD_12_26_9", 0)), 2),
             "ema20": round(float(last.get("EMA_20", 0)), 2),
         }

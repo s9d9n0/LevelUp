@@ -3,7 +3,7 @@
 
 <h2>Lancer un scan</h2>
 
-<form hx-post="/scan" hx-target="#results" hx-indicator="#spinner">
+<form class="scan-form" hx-post="/scan" hx-target="#results" hx-indicator="#spinner">
 
     <div class="form-group">
         <label>RSI min</label>
@@ -31,6 +31,10 @@
     <span id="spinner" class="htmx-indicator">⏳ Scan en cours…</span>
 
 </form>
+
+<div id="export-bar" style="display:none; margin-bottom: 1rem;">
+    <a id="export-link" href="#" class="export-btn">⬇ Exporter CSV</a>
+</div>
 
 <div id="results"></div>
 

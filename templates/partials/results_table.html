@@ -1,28 +1,48 @@
 {% if results %}
 <div class="results-wrapper">
-    <table>
+    <table id="results-table">
         <thead>
             <tr>
-            <th>Ticker</th>
-            <th>RSI</th>
-            <th>Clôture</th>
-            <th>MACD</th>
-            <th>EMA 20</th>
+                <th data-col="ticker">Ticker ⇅</th>
+                <th data-col="name">Libellé ⇅</th>
+                <th data-col="close">Clôture ⇅</th>
+                <th data-col="variation_1d">Var. 1J ⇅</th>
+                <th data-col="variation_1w">Var. 1S ⇅</th>
+                <th data-col="rsi">RSI ⇅</th>
+                <th data-col="macd">MACD ⇅</th>
+                <th data-col="ema20">EMA 20 ⇅</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="results-body">
             {% for r in results %}
-            <tr>
-            <td><a href="/chart/{{ r.ticker }}">{{ r.ticker }}</a></td>
-            <td>{{ r.rsi }}</td>
-            <td>{{ r.close }}</td>
-            <td>{{ r.macd }}</td>
-            <td>{{ r.ema20 }}</td>
+            <tr
+                data-ticker="{{ r.ticker }}"
+                data-name="{{ r.name }}"
+                data-close="{{ r.close }}"
+                data-variation_1d="{{ r.get('variation_1d', 0) }}"
+                data-variation_1w="{{ r.get('variation_1w', 0) }}"
+                data-rsi="{{ r.rsi }}"
+                data-macd="{{ r.macd }}"
+                data-ema20="{{ r.ema20 }}"
+            >
+                <td><a href="/chart/{{ r.ticker }}">{{ r.ticker }}</a></td>
+                <td>{{ r.name }}</td>
+                <td>{{ r.close }} €</td>
+                <td class="{{ 'positive' if r.get('variation_1d', 0) > 0 else 'negative' }}">
+                    {{ "+" if r.get('variation_1d', 0) > 0 else "" }}{{ r.get('variation_1d', '—') }} %
+                </td>
+                <td class="{{ 'positive' if r.get('variation_1w', 0) > 0 else 'negative' }}">
+                    {{ "+" if r.get('variation_1w', 0) > 0 else "" }}{{ r.get('variation_1w', '—') }} %
+                </td>
+                <td>{{ r.rsi }}</td>
+                <td>{{ r.macd }}</td>
+                <td>{{ r.ema20 }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
 {% else %}
-    <p>Aucun titre ne correspond aux critères.</p>
+<p class="empty-message">Aucun titre ne correspond aux critères.</p>
 {% endif %}

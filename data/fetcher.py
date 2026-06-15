@@ -3,7 +3,7 @@ import yfinance as yf
 import pandas as pd
 
 
-async def fetch_ohlcv(ticker: str, period: str = "6mo") -> pd.DataFrame:
+async def fetch_ohlcv(ticker: str, period: str = "5y") -> pd.DataFrame:
     loop = asyncio.get_event_loop()
     df = await loop.run_in_executor(None, lambda: yf.download(ticker, period=period, auto_adjust=True))
     # Aplatir le MultiIndex des colonnes

@@ -184,8 +184,34 @@ tbody td:first-child {
     font-size: 0.95rem;
 }
 
+.positive {
+    color: #2ea043;
+    font-weight: 600;
+}
+
+.negative {
+    color: #f85149;
+    font-weight: 600;
+}
 
 
+
+
+/* ── Export ── */
+.export-btn {
+    display: inline-block;
+    background-color: #1f6feb;
+    color: #fff;
+    padding: 0.45rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.export-btn:hover {
+    background-color: #388bfd;
+}
 
 
 
